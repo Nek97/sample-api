@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { cleanStringList } from 'src/common/string.helpers';
 import { IItemStructure, IValidItemStructure } from 'src/dto/item.type';
 import { itemValidator } from 'src/validation/item.validator';
+import { ErrorEnum } from 'src/common/error.enum';
 
 @Injectable()
 export class ItemService {
@@ -12,6 +13,9 @@ export class ItemService {
     const request = await this.httpService.axiosRef.get(
       'https://docs.google.com/spreadsheet/ccc?key=0Aqg9JQbnOwBwdEZFN2JKeldGZGFzUWVrNDBsczZxLUE&single=true&gid=0&output=csv',
     );
+    if (request.status !== 200 || !request.data) {
+      throw new Error(ErrorEnum.CSV_NOT_REACHABLE);
+    }
     return request.data;
   }
 
