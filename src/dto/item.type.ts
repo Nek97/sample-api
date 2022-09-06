@@ -6,6 +6,6 @@ export class IItemStructure {
 
 export class IValidItemStructure {
   title: string;
-  description: string;
+  description?: string;
   image: string;
 }

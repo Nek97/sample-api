@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { IItemStructure } from './dto/item.type';
-import { cleanStringList } from './string.helpers';
+import { cleanStringList } from 'src/common/string.helpers';
+import { IItemStructure, IValidItemStructure } from 'src/dto/item.type';
+import { itemValidator } from 'src/validation/item.validator';
 
 @Injectable()
-export class AppService {
+export class ItemService {
   constructor(private readonly httpService: HttpService) {}
 
   async getCsvData(): Promise<string> {
@@ -65,6 +66,22 @@ export class AppService {
     const lines: string[] | undefined = csv.split(String.fromCharCode(13));
     if (lines && lines[index + 1]) {
       return this.processLine(lines[index + 1]);
+    }
+    throw new Error("The line required doesn't exist");
+  }
+
+  async getValidItemList(): Promise<IValidItemStructure[]> {
+    const LineList: IItemStructure[] = await this.getItemList();
+    const ValidLineList: IValidItemStructure[] = LineList.filter(
+      itemValidator,
+    ) as IValidItemStructure[];
+    return ValidLineList;
+  }
+
+  async getValidItem(index = 0): Promise<IValidItemStructure> {
+    const validLineList = await this.getValidItemList();
+    if (validLineList && validLineList[index]) {
+      return validLineList[index];
     }
     throw new Error("The line required doesn't exist");
   }
