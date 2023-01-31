@@ -9,4 +9,4 @@ import { ItemValidController } from './item-valid.controller';
   controllers: [ItemController, ItemValidController],
   providers: [ItemService],
 })
-export class AppModule {}
+export class ItemModule {}
