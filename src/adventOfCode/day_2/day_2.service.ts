@@ -1,85 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { ErrorEnum } from 'src/common/error.enum';
 import * as file from 'src/common/file.helpers';
 import {
   IElvesTournamentMatch,
   IElvesTournamentPlay,
-  T_RPS,
 } from 'src/dto/adventOfCode/day2.type';
 import { playGoodAsMatch } from 'src/validation/adventOfCoode/day_2.validator';
-
-const RPS_Map = (symbol: string) => {
-  if (symbol === 'A' || symbol === 'X') {
-    return 'r';
-  }
-  if (symbol === 'B' || symbol === 'Y') {
-    return 'p';
-  }
-  if (symbol === 'C' || symbol === 'Z') {
-    return 's';
-  }
-  throw new Error(ErrorEnum.BAD_INPUT);
-};
-
-const points = (symbol: T_RPS) => {
-  if (symbol === 'r') {
-    return 1;
-  }
-  if (symbol === 'p') {
-    return 2;
-  }
-  return 3;
-};
-
-const mapNeed = (symbol: string) => {
-  if (symbol === 'X') {
-    return 'L';
-  }
-  if (symbol === 'Y') {
-    return 'D';
-  }
-  if (symbol === 'Z') {
-    return 'W';
-  }
-  throw new Error(ErrorEnum.BAD_INPUT);
-};
-const winConditions: { lose: T_RPS; win: T_RPS }[] = [
-  {
-    lose: 'r',
-    win: 'p',
-  },
-  {
-    lose: 'p',
-    win: 's',
-  },
-  {
-    lose: 's',
-    win: 'r',
-  },
-];
-
-const getWinner = (p: T_RPS): 'r' | 's' | 'p' => {
-  for (const match of winConditions) {
-    if (match.lose === p) {
-      return match.win;
-    }
-  }
-  throw new Error(ErrorEnum.BAD_INPUT);
-};
-
-const getLooser = (p: T_RPS): 'r' | 's' | 'p' => {
-  for (const match of winConditions) {
-    if (match.win === p) {
-      return match.lose;
-    }
-  }
-  throw new Error(ErrorEnum.BAD_INPUT);
-};
+import {
+  getLooser,
+  getWinner,
+  points,
+  RPS_Map,
+  mapNeed,
+} from './day_2.helpers';
 
 @Injectable()
 export class Day2Service {
-  applyStrategy(matchList: IElvesTournamentMatch[]) {
-    console.log(matchList[0]);
+  private calculatePoints(list: IElvesTournamentMatch[]) {
+    let points = 0;
+    list.map((r) => {
+      points += r.score;
+    });
+    return points;
+  }
+
+  private applyStrategy(matchList: IElvesTournamentMatch[]) {
     matchList.map((match) => {
       if (match.need === 'L') {
         match.p2 = getLooser(match.p1);
@@ -89,11 +33,11 @@ export class Day2Service {
         match.p2 = match.p1;
       }
     });
-    console.log(matchList[0]);
+
     return matchList;
   }
 
-  evaluateMatch(matchList: IElvesTournamentMatch[]) {
+  private evaluateMatch(matchList: IElvesTournamentMatch[]) {
     matchList.map((match) => {
       match.score = points(match.p2);
       if (match.p1 === match.p2) {
@@ -126,7 +70,7 @@ export class Day2Service {
     return matchList;
   }
 
-  convertBuffer(fileBuffer: number[]): IElvesTournamentMatch[] {
+  private convertBuffer(fileBuffer: number[]): IElvesTournamentMatch[] {
     const p1Symbol = ['A', 'B', 'C'];
     const p2Symbol = ['X', 'Y', 'Z'];
     let buffer: IElvesTournamentPlay = {};
@@ -152,7 +96,7 @@ export class Day2Service {
     return matches;
   }
 
-  getData(): IElvesTournamentMatch[] {
+  private getData(): IElvesTournamentMatch[] {
     const fileData = file.getFile('src/adventOfCode/day_2/input.txt');
     return this.convertBuffer(fileData);
   }
@@ -160,22 +104,15 @@ export class Day2Service {
   getScore(): number {
     const matchData = this.getData();
     const resultList = this.evaluateMatch(matchData);
-    let points = 0;
-    resultList.map((r) => {
-      points += r.score;
-    });
-    return points;
+
+    return this.calculatePoints(resultList);
   }
 
   getScoreUsingStrategy(): number {
     const matchData = this.getData();
     const adjustedList = this.applyStrategy(matchData);
     const resultList = this.evaluateMatch(adjustedList);
-    let points = 0;
-    resultList.map((r) => {
-      points += r.score;
-    });
 
-    return points;
+    return this.calculatePoints(resultList);
   }
 }
