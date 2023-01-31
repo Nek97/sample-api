@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import * as file from 'src/common/file.helpers';
 import { IDay1Star2 } from 'src/dto/adventOfCode/day1.type';
 
 @Injectable()
@@ -44,40 +43,9 @@ export class Day1Service {
     return maxCalories;
   }
 
-  convertbuffer(fileBuffer: number[]): number[][] {
-    let num = 0;
-    let buffer: number[] = [];
-    const elves: number[][] = [];
-    let save = false;
-    fileBuffer.map((charCode: number) => {
-      if (charCode === 10) {
-        if (save) {
-          elves.push(buffer);
-          buffer = [];
-          save = false;
-        } else {
-          buffer.push(num);
-          num = 0;
-          save = true;
-        }
-      } else {
-        save = false;
-        num = num * 10 + charCode - 48;
-      }
-    });
-    return elves;
-  }
-
-  getFile(): any {
-    const file = readFileSync(
-      join(process.cwd(), 'src/adventOfCode/day_1/input.txt'),
-    ).toJSON().data;
-    return file;
-  }
-
   getData(): number[][] {
-    const fileData = this.getFile();
-    return this.convertbuffer(fileData);
+    const fileData = file.getFile('src/adventOfCode/day_1/input.txt');
+    return file.convertNumberBuffer(fileData);
   }
 
   findMaxCalories(): number {
