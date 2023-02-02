@@ -4,9 +4,17 @@ import { Day2Module } from './day_2/day_2.module';
 import { Day3Module } from './day_3/day_3.module';
 import { Day4Module } from './day_4/day_4.module';
 import { Day5Module } from './day_5/day_5.module';
+import { Day6Module } from './day_6/day_6.module';
 
 @Module({
-  imports: [Day1Module, Day2Module, Day3Module, Day4Module, Day5Module],
+  imports: [
+    Day1Module,
+    Day2Module,
+    Day3Module,
+    Day4Module,
+    Day5Module,
+    Day6Module,
+  ],
   controllers: [],
   providers: [],
 })
