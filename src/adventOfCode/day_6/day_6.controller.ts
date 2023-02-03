@@ -9,4 +9,9 @@ export class Day6Controller {
   getDay6Star1(): number {
     return this.Day6Service.getStartOfPacketIndex();
   }
+
+  @Get('star2')
+  getDay6Star2(): number {
+    return this.Day6Service.getStartOfMessageIndex();
+  }
 }
